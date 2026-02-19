@@ -1,5 +1,10 @@
 package NN
 
+import (
+	"math"
+	"math/rand/v2"
+)
+
 /*
 
 Given a set of random points on a predetermined quadratic function,
@@ -14,6 +19,36 @@ type Neuron struct {
 	Input   []float64
 }
 
+func NewNeuron(numInputs int) *Neuron {
+	weights := make([]float64, numInputs)
+	for i := range weights {
+		weights[i] = rand.Float64()*2 - 1
+	}
+
+	return &Neuron{
+		Weights: weights,
+		Bias:    0.01,
+		Output:  0,
+		Input:   make([]float64, numInputs),
+	}
+}
+
+type NeuralNetwork struct {
+	HiddenLayer []Neuron
+	OutputLayer Neuron
+}
+
+func NewNeuralNetwork() *NeuralNetwork {
+	hiddenNeurons := make([]Neuron, 3)
+	for i := range hiddenNeurons {
+		hiddenNeurons[i] = *NewNeuron(1)
+	}
+	return &NeuralNetwork{
+		HiddenLayer: hiddenNeurons,
+		OutputLayer: *NewNeuron(3),
+	}
+}
+
 func (n Neuron) predict(inputs []float64) float64 {
 	n.Input = inputs
 	var sum float64
@@ -22,4 +57,18 @@ func (n Neuron) predict(inputs []float64) float64 {
 	}
 	n.Output = sum + n.Bias
 	return n.Output
+}
+
+func (nn NeuralNetwork) predict(x float64) float64 {
+	inputVal := []float64{x}
+	hiddenResults := make([]float64, len(nn.HiddenLayer))
+
+	for i := range nn.HiddenLayer {
+		raw := nn.HiddenLayer[i].predict(inputVal)
+		hiddenResults[i] = math.Max(0, raw)
+	}
+
+	finalResult := nn.OutputLayer.predict(hiddenResults)
+
+	return finalResult
 }
