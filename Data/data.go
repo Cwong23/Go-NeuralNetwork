@@ -3,23 +3,23 @@ package data
 import "fmt"
 
 type DataSet struct {
-	a float64
-	b float64
-	c float64
+	A float64
+	B float64
+	C float64
 }
 
-func newDataSet(a float64, b float64, c float64) *DataSet {
+func NewDataSet(a float64, b float64, c float64) *DataSet {
 	return &DataSet{
-		a: a,
-		b: b,
-		c: c,
+		A: a,
+		B: b,
+		C: c,
 	}
 }
 
 func (d DataSet) calculateY(x float64) float64 {
-	return (d.a * x * x) + (d.b * x) + d.c
+	return (d.A * x * x) + (d.B * x) + d.C
 }
 
 func (d DataSet) printEquation() {
-	fmt.Printf("Equation: %fx^2 + %fx + %f", d.a, d.b, d.c)
+	fmt.Printf("Equation: %fx^2 + %fx + %f", d.A, d.B, d.C)
 }
