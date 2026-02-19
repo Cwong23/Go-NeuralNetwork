@@ -1,7 +1,8 @@
 package main
 
-import "fmt"
+import "Go-NerualNetwork/NN"
 
 func main() {
-    fmt.Println("Hello, World!")
+	model := NN.NewNeuralNetwork()
+
 }
