@@ -49,7 +49,7 @@ func NewNeuralNetwork() *NeuralNetwork {
 	}
 }
 
-func (n Neuron) predict(inputs []float64) float64 {
+func (n *Neuron) predict(inputs []float64) float64 {
 	n.Input = inputs
 	var sum float64
 	for i, x := range inputs {
@@ -59,7 +59,14 @@ func (n Neuron) predict(inputs []float64) float64 {
 	return n.Output
 }
 
-func (nn NeuralNetwork) predict(x float64) float64 {
+func (n *Neuron) UpdateWeights(gradient float64, learningRate float64) {
+	for i := range n.Weights {
+		n.Weights[i] += learningRate * gradient * n.Input[i]
+	}
+	n.Bias += learningRate * gradient
+}
+
+func (nn *NeuralNetwork) predict(x float64) float64 {
 	inputVal := []float64{x}
 	hiddenResults := make([]float64, len(nn.HiddenLayer))
 
@@ -71,4 +78,19 @@ func (nn NeuralNetwork) predict(x float64) float64 {
 	finalResult := nn.OutputLayer.predict(hiddenResults)
 
 	return finalResult
+}
+
+func (nn *NeuralNetwork) backPropagation(y float64, pred float64, learningRate float64) {
+	gradient := y - pred
+	for i := range nn.HiddenLayer {
+		weightToOutput := nn.OutputLayer.Weights[i]
+		reluDerivative := 0.0
+		if nn.HiddenLayer[i].Output > 0 {
+			reluDerivative = 1.0
+		}
+
+		hiddenGradient := gradient * weightToOutput * reluDerivative
+		nn.HiddenLayer[i].UpdateWeights(hiddenGradient, learningRate)
+	}
+	nn.OutputLayer.UpdateWeights(gradient, learningRate)
 }
